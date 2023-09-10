@@ -1,10 +1,6 @@
 import streamlit as st
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import altair as alt
-
-plt.style.use("seaborn-poster")
 
 
 def get_data(columns):
