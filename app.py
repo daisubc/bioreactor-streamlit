@@ -3,12 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from time import sleep
 import pandas as pd
-
+from millify import millify
 
 from gui.sidebar import mk_sidebar
+from gui.instructions import render_instructions
 from gui.graph import write_XP_graph, write_nutrients_graph, write_volume_graph
 
-from model.run import init_sim, gen
+from model.run import init_sim, gen, param
 
 
 if not "auto_refresh" in st.session_state:
@@ -44,25 +45,43 @@ F_B=0
 st.title("CHO Cell Bioreactor Simulator")
 st.subheader("An interactive bioprocess simulation")
 
+col1, col2, col3 = st.columns(3)
+
+if 'data' not in st.session_state:
+    col1.metric("$X_v$", None, help="Cell concentration in cells per milliliter")
+    col2.metric("$P$", None)
+    col3.metric("$F_{Glc}$", None)
+    col1.metric("$Glc$", None)
+    col2.metric("$Glc$", None)
+    col3.metric("$F_{Gln}$", None)
+else:
+
+    data = st.session_state['data']
+    values = data.iloc[-1]
+
+    if data.shape[0] > 1:
+        delta = data.iloc[-1] - data.iloc[-2]
+    else:
+        delta = data.iloc[-1] - data.iloc[-1]
+
+    col1.metric("$X_v$", "{} {}".format(millify(values['X']), "c/mL"), delta="{} {}".format(
+        millify(delta['X']), "c/mL"), help="Cell concentration in cells per milliliter")
+    col2.metric("$P$", "{} {}".format(millify(values['P']), "ug/mL"), delta="{} {}".format(
+        millify(delta['P']), "ug/mL"), help="Product concentration in micrograms per milliliter")
+    col3.metric("$F_{Glc}$", "{} {}".format(millify(values['F_Glc']), "L/h"), delta="{} {}".format(
+        millify(delta['F_Glc']), "L/h"), help="Flowrate of glucose into the reactor in litres per hour")
+    col1.metric("$Glc$", "{} {}".format(millify(values['Glc']), "mM"), delta="{} {}".format(
+        millify(delta['Glc']), "mM"), help="Glucose concentration in millimolar")
+    col2.metric("$Glc$", "{} {}".format(millify(values['Gln']), "mM"), delta="{} {}".format(
+        millify(delta['Gln']), "mM"), help="Glutamine concentration in millimolar")
+    col3.metric("$F_{Gln}$", "{} {}".format(millify(values['F_Gln']), "L/h"), delta="{} {}".format(
+        millify(delta['F_Gln']), "L/h"), help="Flowrate of glutamine into the reactor in litres per hour")
+
 tab1, tab2, tab3, tab4 = st.tabs([':question: Instructions', ':moneybag: Cells & Product', ':carrot: Substrate', ':alembic: Volume & Flows'])
 
 # Center Visual
 with tab1:
-    st.markdown("""
-        The simulation is for CHO cells secreting a recombinant protein product, P. Manipulate the initial concentrations of substrate, 
-        and test operating the reactor in fed-batch to yield optimal results.
-    """)
-    
-    st.markdown("""
-        ##### Abbreviations
-        - **X:** Viable Cell concentration
-        - **P:** Product
-        - **Glc:** Glucose
-        - **Gln:** Glutamine
-        - **Amm:** Ammonium
-        - **PR:** Production Rate
-        - **UR:** Uptake Rate
-    """)
+    render_instructions(param)
 
 with tab2:
     write_XP_graph()

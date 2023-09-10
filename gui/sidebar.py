@@ -1,5 +1,13 @@
 import streamlit as st
 import numpy as np
+from pandas import DataFrame
+
+@st.cache_resource
+def download_data():
+    if 'data' in st.session_state:
+        return st.session_state['data'].to_csv().encode('utf-8')
+    else:
+        return DataFrame().to_csv().encode('utf-8')
 
 def mk_sidebar(
         title="Default Title", 
@@ -24,6 +32,15 @@ def mk_sidebar(
 
         speed = st.select_slider("Speed Equals:", options=['1x', '2x', '3x'])
         st.session_state.sleep_time = 0.1 / int(speed[0])
+
+        csv = download_data()
+        st.download_button(
+            ":arrow_down: Simulation Data", 
+            data=csv, mime= 'text/csv', 
+            file_name="simulation_data.csv", 
+            disabled=st.session_state.auto_refresh,
+            help="Get data from simulation. Stop the simulation to enable."
+        )
 
     with st.expander("Control Panel"):
         st.subheader("**Initial Concentrations**")
