@@ -1,103 +1,87 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import altair as alt
 
-plt.style.use('seaborn-poster')
+plt.style.use("seaborn-poster")
+
+
+def get_data(columns):
+    if "data" in st.session_state:
+        return st.session_state["data"][columns]
+    else:
+        return pd.DataFrame(columns=columns)
+
 
 def write_XP_graph():
+    data = get_data(["t", "X", "P"])
 
-    fig, ax = plt.subplots()
-    ax2 = ax.twinx()
-    fig.tight_layout()
+    # First chart for Glc and Lac
+    chart1 = alt.layer(
+        alt.Chart(data)
+        .mark_line(color="black")
+        .encode(x=alt.X("t:Q", title="Time (h)"), y=alt.Y("X:Q", title="Cells (c/mL)")),
+    )
 
-    if "data" in st.session_state:
-        p_data = [st.session_state['data']['P'][i]
-                for i in range(len(st.session_state['data']['P']))]
-        x_data = [st.session_state['data']['X'][i]
-                for i in range(len(st.session_state['data']['X']))]
-        t_data = [st.session_state['data']['t'][i]
-                for i in range(len(st.session_state['data']['t']))]
+    # Second chart for Gln and Amm
+    chart2 = alt.layer(
+        alt.Chart(data)
+        .mark_line(color="blue")
+        .encode(
+            x=alt.X("t:Q", title="Time (h)"), y=alt.Y("P:Q", title="Product (ug/mL)")
+        ),
+    )
 
-        ax.plot(t_data, x_data, '--or', label="Xv (c/mL)")
-        ax2.plot(t_data, p_data, '--ob', label="Product")
-
-        ax.legend(loc="upper left")
-        ax2.legend(loc="lower left")
-
-    color = 'tab:red'
-    ax.set_xlabel('Time (h)')
-    ax.set_ylabel('Xv (c/mL)', color=color)
-
-    ax.set_ylim(bottom=0)
-
-    color = 'tab:blue'
-    ax2.set_ylabel("P (ug/mL)")
-    ax2.tick_params(axis='y', labelcolor=color)
-
-    st.pyplot(fig)
+    left, right = st.columns(2)
+    left.altair_chart(chart1, use_container_width=True)
+    right.altair_chart(chart2, use_container_width=True)
 
 
 def write_nutrients_graph():
+    data = get_data(["t", "Lac", "Glc", "Gln", "Amm"])
 
-    fig, ax = plt.subplots()
-    ax2 = ax.twinx()
-    fig.tight_layout()
+    # First chart for Glc and Lac
+    chart1 = alt.Chart(data).mark_line(color="blue").encode(
+        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("Glc:Q", title="Glc (mM)")
+    ) + alt.Chart(data).mark_line(color="lime").encode(
+        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("Lac:Q", title="Lac (mM)")
+    )
 
-    if "data" in st.session_state:
-        lac_data = [st.session_state['data']['Lac'][i]
-                for i in range(len(st.session_state['data']['Lac']))]
-        glc_data = [st.session_state['data']['Glc'][i]
-                for i in range(len(st.session_state['data']['Glc']))]
-        gln_data = [st.session_state['data']['Gln'][i]
-                for i in range(len(st.session_state['data']['Gln']))]
-        amm_data = [st.session_state['data']['Amm'][i]
-                for i in range(len(st.session_state['data']['Amm']))]
-        t_data = [st.session_state['data']['t'][i]
-                for i in range(len(st.session_state['data']['t']))]
-        
-        ax.plot(t_data, glc_data, color="red", label="Glucose")
-        ax.plot(t_data, lac_data, color="blue", label="Lactate")
-        ax2.plot(t_data, gln_data, color="green", label="Glutamine")
-        ax2.plot(t_data, amm_data, color="cyan", label="Ammonium")
+    # Second chart for Gln and Amm
+    chart2 = alt.Chart(data).mark_line(color="red").encode(
+        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("Gln:Q", title="Gln (mM)")
+    ) + alt.Chart(data).mark_line(color="orange").encode(
+        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("Amm:Q", title="Amm (mM)")
+    )
 
-        ax.legend(loc="upper left")
-        ax2.legend(loc="lower left")
+    # Display the charts in Streamlit
+    left, right = st.columns(2)
+    left.altair_chart(chart1, use_container_width=True)
+    right.altair_chart(chart2, use_container_width=True)
 
-    ax.set_xlabel('Time (h)')
-    ax.set_ylabel('Glc, Lac (mM)')
-    ax.set_ylim(bottom=0)
-
-    ax2.set_ylabel("Gln, Amm (mM)")
-    ax2.tick_params(axis='y')
-    ax2.set_ylim(bottom=0)
-
-    fig.tight_layout()
-
-
-    st.pyplot(fig)
 
 def write_volume_graph():
+    data = get_data(["t", "V", "F_Gln", "F_Glc"])
 
-    fig, ax = plt.subplots()
-    ax2 = ax.twinx()
-    fig.tight_layout()
+    # First chart for Glc and Lac
+    chart2 = alt.Chart(data).mark_line(color="blue").encode(
+        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("F_Gln:Q", title="F_Gln (L/h)")
+    ) + alt.Chart(data).mark_line(color="red").encode(
+        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("F_Glc:Q", title="F_Glc (L/h)")
+    )
 
-    if "data" in st.session_state:
-        v_data = [st.session_state['data']['V'][i] for i in range(len(st.session_state['data']['V']))]
-        f_glc_data = [st.session_state['data']['F_Glc'][i] for i in range(len(st.session_state['data']['F_Glc']))]
-        f_gln_data = [st.session_state['data']['F_Gln'][i] for i in range(len(st.session_state['data']['F_Gln']))]
-        t_data = [st.session_state['data']['t'][i] for i in range(len(st.session_state['data']['t']))]
+    # Second chart for Gln and Amm
+    chart1 = (
+        alt.Chart(data)
+        .mark_line(color="purple")
+        .encode(
+            x=alt.X("t:Q", title="Time (h)"),
+            y=alt.Y("V:Q", title="Volume (L)"),
+        )
+    )
 
-        ax.plot(t_data, v_data, color="red", label="Volume")
-        ax2.plot(t_data, f_glc_data, color="blue", label="F_Glc")
-        ax2.plot(t_data, f_gln_data, color="green", label="F_Gln")
-        ax.legend(loc="upper left")
-        ax2.legend(loc="lower left")
-
-    ax.set_xlabel('Time (h)')
-    ax.set_ylabel('Volume (mL)')
-
-    ax2.set_ylabel("Flow (L/h)")
-    ax2.set_ylim(bottom=0)
-
-    st.pyplot(fig)
+    # Display the charts in Streamlit
+    left, right = st.columns(2)
+    left.altair_chart(chart1, use_container_width=True)
+    right.altair_chart(chart2, use_container_width=True)
