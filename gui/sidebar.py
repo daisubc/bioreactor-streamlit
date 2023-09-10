@@ -29,7 +29,9 @@ def mk_sidebar(title="Default Title", caption="Default Caption"):
         """
         Speed Control
         """
-        st.session_state.auto_refresh = st.toggle("Run Simulation")
+        st.session_state.auto_refresh = st.toggle(
+            "Run Simulation", key="running_toggle"
+        )
 
         speed = st.select_slider("Speed Equals:", options=["1x", "2x", "3x"])
         st.session_state.sleep_time = 0.1 / int(speed[0])

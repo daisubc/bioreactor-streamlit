@@ -33,7 +33,7 @@ if "data" not in st.session_state and st.session_state.auto_refresh:
     [Glc_0, Gln_0] = st.session_state.initial_vals
 
     res = init_sim(Glc_0=Glc_0, Gln_0=Gln_0)
-    st.session_state["data"] = pd.DataFrame([res])
+    st.session_state["data"] = pd.DataFrame([res]).set_index("t", drop=False)
 
 # Some initial values
 Glc_F = 2500  # mM
@@ -56,18 +56,45 @@ tab1, tab2, tab3, tab4 = st.tabs(
     ]
 )
 
+if "data" in st.session_state:
+    data = st.session_state.data
+else:
+    data = pd.DataFrame(
+        columns=[
+            "X",
+            "P",
+            "t",
+            "Lac",
+            "Glc",
+            "Gln",
+            "Amm",
+            "V",
+            "F_Gln",
+            "F_Glc",
+        ]
+    )
+
 # Center Visual
 with tab1:
     render_instructions(param)
 
 with tab2:
-    write_XP_graph()
+    chart1, chart2 = write_XP_graph(data)
+    left, right = st.columns(2)
+    Xchart = left.altair_chart(chart1, use_container_width=True)
+    Pchart = right.altair_chart(chart2, use_container_width=True)
 
 with tab3:
-    write_nutrients_graph()
+    chart1, chart2 = write_nutrients_graph(data)
+    left, right = st.columns(2)
+    left.altair_chart(chart1, use_container_width=True)
+    right.altair_chart(chart2, use_container_width=True)
 
 with tab4:
-    write_volume_graph()
+    chart1, chart2 = write_volume_graph(data)
+    left, right = st.columns(2)
+    left.altair_chart(chart1, use_container_width=True)
+    right.altair_chart(chart2, use_container_width=True)
 
 if st.session_state.auto_refresh:
     data = st.session_state["data"]
@@ -87,8 +114,10 @@ if st.session_state.auto_refresh:
     try:
         res_n = next(gen(data.iloc[-1], Glc_F, Gln_F, F_Glc, F_Gln, F_B))
 
+        df_n = pd.DataFrame().from_dict([res_n]).set_index("t", drop=False)
+
         st.session_state["data"] = pd.concat(
-            [data, pd.DataFrame([res_n])], ignore_index=True
+            [data, pd.DataFrame([res_n]).set_index("t", drop=False)],
         )
     except StopIteration:
         st.toast("Simulation Complete! :partying_face:")

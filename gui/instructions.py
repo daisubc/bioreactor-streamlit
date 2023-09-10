@@ -2,6 +2,7 @@ import streamlit as st
 from pandas import DataFrame
 
 
+@st.cache_resource
 def render_instructions(params):
     col1, col2 = st.columns(2)
     col1.markdown(

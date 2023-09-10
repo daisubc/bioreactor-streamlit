@@ -137,7 +137,7 @@ def gen(data, Glc_F, Gln_F, F_Glc, F_Gln, F_B, t_max=250, dt=0.5):
     n_points = int(t_max / dt) + 1
 
     for _ in range(n_points):
-        if res["t"] > t_max:
+        if res["t"] >= t_max:
             break
 
         t = res["t"] + dt

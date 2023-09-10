@@ -1,17 +1,10 @@
 import streamlit as st
-import pandas as pd
 import altair as alt
 
 
-def get_data(columns):
-    if "data" in st.session_state:
-        return st.session_state["data"][columns]
-    else:
-        return pd.DataFrame(columns=columns)
-
-
-def write_XP_graph():
-    data = get_data(["t", "X", "P"])
+@st.cache_data(ttl=5)
+def write_XP_graph(data):
+    data = data[["t", "X", "P"]]
 
     # First chart for Glc and Lac
     chart1 = alt.layer(
@@ -29,13 +22,12 @@ def write_XP_graph():
         ),
     )
 
-    left, right = st.columns(2)
-    left.altair_chart(chart1, use_container_width=True)
-    right.altair_chart(chart2, use_container_width=True)
+    return chart1, chart2
 
 
-def write_nutrients_graph():
-    data = get_data(["t", "Lac", "Glc", "Gln", "Amm"])
+@st.cache_data(ttl=5)
+def write_nutrients_graph(data):
+    data = data[["t", "Lac", "Glc", "Gln", "Amm"]]
 
     # First chart for Glc and Lac
     chart1 = alt.Chart(data).mark_line(color="blue").encode(
@@ -52,13 +44,12 @@ def write_nutrients_graph():
     )
 
     # Display the charts in Streamlit
-    left, right = st.columns(2)
-    left.altair_chart(chart1, use_container_width=True)
-    right.altair_chart(chart2, use_container_width=True)
+    return chart1, chart2
 
 
-def write_volume_graph():
-    data = get_data(["t", "V", "F_Gln", "F_Glc"])
+@st.cache_data(ttl=5)
+def write_volume_graph(data):
+    data = data[["t", "V", "F_Gln", "F_Glc"]]
 
     # First chart for Glc and Lac
     chart2 = alt.Chart(data).mark_line(color="blue").encode(
@@ -78,6 +69,4 @@ def write_volume_graph():
     )
 
     # Display the charts in Streamlit
-    left, right = st.columns(2)
-    left.altair_chart(chart1, use_container_width=True)
-    right.altair_chart(chart2, use_container_width=True)
+    return chart1, chart2
