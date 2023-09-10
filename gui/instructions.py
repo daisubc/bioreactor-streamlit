@@ -33,8 +33,9 @@ def render_instructions(params):
         You can check that your substrate is being added in the *Volume & Flows* view.
     """)
 
-    st.info(
-        "**[Glc]** should not exceed 60mM at any time. **[Gln]** should not exceed 10mM at any time.", icon="🚨"
+    _, mid, _ = st.columns([1, 3, 1])
+    mid.info(
+        "Be attentive to the concentrations of your substrate. *Glc* should not exceed 60mM at any time. *Gln* should not exceed 10mM at any time.", icon="🚨"
     )
 
     # Equation & Constants Section

@@ -35,7 +35,7 @@ def mk_sidebar(
 
         csv = download_data()
         st.download_button(
-            ":arrow_down: Simulation Data", 
+            ":arrow_down: Download CSV", 
             data=csv, mime= 'text/csv', 
             file_name="simulation_data.csv", 
             disabled=st.session_state.auto_refresh,
