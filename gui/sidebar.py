@@ -33,6 +33,9 @@ def mk_sidebar(title="Default Title", caption="Default Caption"):
             "Run Simulation", key="running_toggle"
         )
 
+        if "data" in st.session_state:
+            st.markdown(f"Simulation Time: *{st.session_state['data']['t'].iloc[-1]}* h")
+
         speed = st.select_slider("Speed Equals:", options=["1x", "2x", "3x"])
         st.session_state.sleep_time = 0.1 / int(speed[0])
 

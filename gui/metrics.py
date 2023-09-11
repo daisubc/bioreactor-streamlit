@@ -3,8 +3,14 @@ from millify import millify
 
 
 def mk_metrics():
-    col1, col2, col3 = st.columns(3)
+    st.divider()
 
+    if "data" not in st.session_state:
+        st.caption("*The bioreactor is not running. Read the instructions below and click on 'Run Simulation' to begin.*")
+    else:
+        st.markdown(f"##### Bioreactor Process Monitoring Dashboard. $t={st.session_state['data']['t'].iloc[-1]}$ hrs")
+
+    col1, col2, col3 = st.columns(3)
     if "data" not in st.session_state:
         col1.metric(
             "$X_v$", None, help="Viable cell concentration in cells per milliliter"
