@@ -84,11 +84,11 @@ def mk_sidebar(title="Default Title", caption="Default Caption"):
 
         st.subheader("**Dosing Times**")
         t0_glc, tn_glc = st.select_slider(
-            "Glucose Dosing Time (h)", options=np.arange(0, 250, 25), value=(175, 225)
+            "Glucose Dosing Time (h)", options=np.arange(0, 251, 25), value=(175, 225)
         )
 
         t0_gln, tn_gln = st.select_slider(
-            "Glutamine Dosing Time (h)", options=np.arange(0, 250, 25), value=(175, 225)
+            "Glutamine Dosing Time (h)", options=np.arange(0, 251, 25), value=(175, 225)
         )
 
         st.session_state.initial_vals = [Glc_0, Gln_0]

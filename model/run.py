@@ -98,13 +98,13 @@ param = {
 
 
 def init_sim(
-    X_0=2e5,  # c/mL
-    Glc_0=35,  # mM
-    Gln_0=4,
-    Lac_0=0,
-    Amm_0=0,
-    P_0=0,  # ug/mL
-    V_0=1000,  # L
+    X_0=2.0e5,  # Cells/mL
+    Glc_0=35.0,  # mM
+    Gln_0=4.0,
+    Lac_0=0.0,
+    Amm_0=0.0,
+    P_0=0.0,  # mg/mL
+    V_0=1000.0,  # L
 ):
     # initialization
     res = {}
@@ -115,7 +115,7 @@ def init_sim(
     res["Amm"] = Amm_0
     res["P"] = P_0
     res["V"] = V_0
-    res["t"] = 0
+    res["t"] = 0.0
 
     res["F_Glc"] = 0
     res["F_Gln"] = 0

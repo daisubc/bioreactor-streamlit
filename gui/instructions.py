@@ -26,8 +26,6 @@ def render_instructions(params):
         |    **Glc**   | Glucose                   |
         |    **Gln**   | Glutamine                 |
         |    **Amm**   | Ammonium                  |
-        |    **PR**    | Production Rate           |
-        |    **UR**    | Uptake Rate               |
     """
     )
 
@@ -37,7 +35,7 @@ def render_instructions(params):
         Choose initial concentrations of $Glc_0$ and $Gln_0$ **before** starting the simulation. To operate in fed-batch, increase the feed flowrates $F_{Glc}$ and $F_{Gln}$.  
         
         For time controlled dosing, the feed will start when _t_ is within the defined dosing times. To manually control the dosing, select the dosing time between $ 0 < t < 225 $ and change $F_{Glc}$ and $F_{Gln}$ as desired.
-        You can check that your substrate is being added in the *Volume & Flows* view.
+        You can check that your substrate is being added in the *Process Volume and Nutrient Feed Volume* view.
     """
     )
 
@@ -109,7 +107,7 @@ def render_instructions(params):
 
     st.markdown(
         """
-        The glucose uptake rate, $GUR$ can be expressed as:
+        The glucose uptake rate, $q_{Glc}$ can be expressed as:
     """
     )
 
@@ -121,7 +119,7 @@ def render_instructions(params):
 
     st.markdown(
         """
-        The glutamine uptake rate, $GlnUR$ can be expressed as:
+        The glutamine uptake rate, $q_{Gln}$ can be expressed as:
     """
     )
 
@@ -133,7 +131,7 @@ def render_instructions(params):
 
     st.markdown(
         """
-        The lactate production rate $LPR$ is defined as:
+        The lactate production rate $q_{Lac}$ is defined as:
     """
     )
 
@@ -148,7 +146,7 @@ def render_instructions(params):
 
     st.markdown(
         """
-        The ammonium production rate $APR$ is defined as:
+        The ammonium production rate $q_{Amm}$ is defined as:
     """
     )
 
@@ -163,7 +161,7 @@ def render_instructions(params):
 
     st.markdown(
         """
-        The Protein Production Rate $PRR$ is defined as:
+        The Protein Production Rate $q_P$ is defined as:
     """
     )
 

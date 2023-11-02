@@ -10,7 +10,10 @@ def write_XP_graph(data):
     chart1 = alt.layer(
         alt.Chart(data)
         .mark_line(color="black")
-        .encode(x=alt.X("t:Q", title="Time (h)"), y=alt.Y("X:Q", title="Cells (c/mL)")),
+        .encode(
+            x=alt.X("t:Q", title="Time (h)"),
+            y=alt.Y("X:Q", title="Cells (Cells/mL)"),
+        ),
     )
 
     # Second chart for Gln and Amm
@@ -18,7 +21,7 @@ def write_XP_graph(data):
         alt.Chart(data)
         .mark_line(color="blue")
         .encode(
-            x=alt.X("t:Q", title="Time (h)"), y=alt.Y("P:Q", title="Product (ug/mL)")
+            x=alt.X("t:Q", title="Time (h)"), y=alt.Y("P:Q", title="Product (mg/mL)")
         ),
     )
 
@@ -30,10 +33,14 @@ def write_nutrients_graph(data):
     data = data[["t", "Lac", "Glc", "Gln", "Amm"]]
 
     # First chart for Glc and Lac
-    chart1 = alt.Chart(data).mark_line(color="blue").encode(
-        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("Glc:Q", title="Glc (mM)")
-    ) + alt.Chart(data).mark_line(color="lime").encode(
-        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("Lac:Q", title="Lac (mM)")
+    chart1 = alt.Chart(data).mark_line().encode(
+        x=alt.X("t:Q", title="Time (h)"),
+        y=alt.Y("Glc:Q", title="Glc (mM)"),
+        color=alt.datum("Glc"),
+    ) + alt.Chart(data).mark_line().encode(
+        x=alt.X("t:Q", title="Time (h)"),
+        y=alt.Y("Lac:Q", title="Lac (mM)"),
+        color=alt.datum("Lac"),
     )
 
     # Second chart for Gln and Amm

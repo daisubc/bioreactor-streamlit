@@ -10,7 +10,7 @@ from gui.graph import write_XP_graph, write_nutrients_graph, write_volume_graph
 from model.run import init_sim, gen, param
 
 
-st.set_page_config(page_title="BioReactorSim", page_icon=":joystick:")
+st.set_page_config(page_title="BioReactorSim", page_icon=":joystick:", layout="wide")
 
 if not "auto_refresh" in st.session_state:
     st.session_state.auto_refresh = False
@@ -47,12 +47,10 @@ st.subheader("An interactive bioprocess simulation")
 
 mk_metrics()
 
-tab1, tab2, tab3, tab4 = st.tabs(
+tab1, tab2 = st.tabs(
     [
         ":question: Instructions",
-        ":moneybag: Cells & Product",
-        ":carrot: Substrate",
-        ":alembic: Volume & Flows",
+        ":joystick: Simulation",
     ]
 )
 
@@ -79,22 +77,21 @@ with tab1:
     render_instructions(param)
 
 with tab2:
-    chart1, chart2 = write_XP_graph(data)
-    left, right = st.columns(2)
-    Xchart = left.altair_chart(chart1, use_container_width=True)
-    Pchart = right.altair_chart(chart2, use_container_width=True)
+    st.subheader("Cells, Products & Process Volume")
+    cells, products = write_XP_graph(data)
+    volume, feed_flows = write_volume_graph(data)
+    left, middle, right = st.columns(3)
+    Xchart = left.altair_chart(cells, use_container_width=True)
+    Pchart = middle.altair_chart(products, use_container_width=True)
+    volume_chart = right.altair_chart(volume, use_container_width=True)
 
-with tab3:
+    st.subheader("Nutrients, Metabolites & Feed Volumes")
+
     chart1, chart2 = write_nutrients_graph(data)
-    left, right = st.columns(2)
-    left.altair_chart(chart1, use_container_width=True)
-    right.altair_chart(chart2, use_container_width=True)
-
-with tab4:
-    chart1, chart2 = write_volume_graph(data)
-    left, right = st.columns(2)
-    left.altair_chart(chart1, use_container_width=True)
-    right.altair_chart(chart2, use_container_width=True)
+    left, middle, right = st.columns(3)
+    glc_lac_chart = left.altair_chart(chart1, use_container_width=True)
+    gln_amm_chart = middle.altair_chart(chart2, use_container_width=True)
+    feed_chart = right.altair_chart(feed_flows, use_container_width=True)
 
 if st.session_state.auto_refresh:
     data = st.session_state["data"]
@@ -113,8 +110,43 @@ if st.session_state.auto_refresh:
 
     try:
         res_n = next(gen(data.iloc[-1], Glc_F, Gln_F, F_Glc, F_Gln, F_B))
-
         df_n = pd.DataFrame().from_dict([res_n]).set_index("t", drop=False)
+
+        df_XP = pd.DataFrame(
+            [{"t": res_n["t"], "X": res_n["X"], "P": res_n["P"]}]
+        ).set_index("t", drop=False)
+
+        df_nutrients = pd.DataFrame(
+            [
+                {
+                    "t": res_n["t"],
+                    "Lac": res_n["Lac"],
+                    "Glc": res_n["Glc"],
+                    "Gln": res_n["Gln"],
+                    "Amm": res_n["Amm"],
+                }
+            ]
+        ).set_index("t", drop=False)
+
+        df_feed_volume = pd.DataFrame(
+            [
+                {
+                    "t": res_n["t"],
+                    "V": res_n["V"],
+                    "F_Gln": res_n["F_Gln"],
+                    "F_Glc": res_n["F_Glc"],
+                }
+            ]
+        ).set_index("t", drop=False)
+
+        Xchart.add_rows(df_XP)
+        Pchart.add_rows(df_XP)
+
+        glc_lac_chart.add_rows(df_nutrients)
+        gln_amm_chart.add_rows(df_nutrients)
+
+        volume_chart.add_rows(df_feed_volume)
+        feed_chart.add_rows(df_feed_volume)
 
         st.session_state["data"] = pd.concat(
             [data, pd.DataFrame([res_n]).set_index("t", drop=False)],

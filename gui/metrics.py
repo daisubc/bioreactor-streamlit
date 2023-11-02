@@ -6,30 +6,29 @@ def mk_metrics():
     st.divider()
 
     if "data" not in st.session_state:
-        st.caption("*The bioreactor is not running. Read the instructions below and click on 'Run Simulation' to begin.*")
+        st.caption(
+            "*The bioreactor is not running. Read the instructions below and click on 'Run Simulation' to begin.*"
+        )
     else:
-        st.markdown(f"##### Bioreactor Process Monitoring Dashboard. $t={st.session_state['data']['t'].iloc[-1]}$ hrs")
+        st.markdown(
+            f"##### Bioreactor Process Monitoring Dashboard. $t={st.session_state['data']['t'].iloc[-1]}$ hrs"
+        )
 
     col1, col2, col3 = st.columns(3)
+
     if "data" not in st.session_state:
-        col1.metric(
-            "$X_v$", None, help="Viable cell concentration in cells per milliliter"
-        )
-        col2.metric(
-            "$P$", None, help="Product concentration in micrograms per milliliter"
-        )
-        col3.metric(
-            "$F_{Glc}$",
-            None,
-            help="Flowrate of glucose into the reactor in litres per hour",
-        )
-        col1.metric("$Glc$", None, help="Glucose concentration in millimolar")
-        col2.metric("$Gln$", None, help="Glutamine concentration in millimolar")
-        col3.metric(
-            "$F_{Gln}$",
-            None,
-            help="Flowrate of glutamine into the reactor in litres per hour",
-        )
+        col1.metric("$X_v$", None)
+        col1.markdown("Viable cell concentration in cells per milliliter")
+        col2.metric("$P$", None)
+        col2.markdown("Product concentration in micrograms per milliliter")
+        col3.metric("$F_{Glc}$", None)
+        col3.markdown("Flowrate of glucose into the reactor")
+        col1.metric("$Glc$", None)
+        col1.markdown("Glucose concentration in millimolar")
+        col2.metric("$Gln$", None)
+        col2.markdown("Glutamine concentration in millimolar")
+        col3.metric("$F_{Gln}$", None)
+        col3.markdown("Flowrate of glutamine into the reactor")
     else:
         data = st.session_state["data"]
         values = data.iloc[-1]
@@ -41,37 +40,38 @@ def mk_metrics():
 
         col1.metric(
             "$X_v$",
-            "{} {}".format(millify(values["X"]), "c/mL"),
-            delta="{} {}".format(millify(delta["X"]), "c/mL"),
+            "{} {}".format(millify(values["X"]), "Cells/mL"),
+            delta="{} {}".format(millify(delta["X"]), "Cells/mL"),
             help="Viable cell concentration in cells per milliliter",
         )
+        col1.markdown("Viable cell concentration in cells per milliliter")
         col2.metric(
             "$P$",
-            "{} {}".format(millify(values["P"]), "ug/mL"),
-            delta="{} {}".format(millify(delta["P"]), "ug/mL"),
-            help="Product concentration in micrograms per milliliter",
+            "{} {}".format(millify(values["P"]), "mg/mL"),
+            delta="{} {}".format(millify(delta["P"]), "mg/mL"),
         )
+        col2.markdown("Product concentration in milligrams per milliliter")
         col3.metric(
             "$F_{Glc}$",
             "{} {}".format(millify(values["F_Glc"]), "L/h"),
             delta="{} {}".format(millify(delta["F_Glc"]), "L/h"),
-            help="Flowrate of glucose into the reactor in litres per hour",
         )
+        col3.markdown("Flowrate of glucose into the reactor")
         col1.metric(
             "$Glc$",
             "{} {}".format(millify(values["Glc"]), "mM"),
             delta="{} {}".format(millify(delta["Glc"]), "mM"),
-            help="Glucose concentration in millimolar",
         )
+        col1.markdown("Glucose concentration in millimolar")
         col2.metric(
             "$Gln$",
             "{} {}".format(millify(values["Gln"]), "mM"),
             delta="{} {}".format(millify(delta["Gln"]), "mM"),
-            help="Glutamine concentration in millimolar",
         )
+        col2.markdown("Glutamine concentration in millimolar")
         col3.metric(
             "$F_{Gln}$",
             "{} {}".format(millify(values["F_Gln"]), "L/h"),
             delta="{} {}".format(millify(delta["F_Gln"]), "L/h"),
-            help="Flowrate of glutamine into the reactor in litres per hour",
         )
+        col3.markdown("Flowrate of glutamine into the reactor")
