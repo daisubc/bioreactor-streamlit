@@ -33,7 +33,9 @@ if "data" not in st.session_state and st.session_state.auto_refresh:
     [Glc_0, Gln_0] = st.session_state.initial_vals
 
     res = init_sim(Glc_0=Glc_0, Gln_0=Gln_0)
-    st.session_state["data"] = pd.DataFrame([res]).set_index("t", drop=False)
+    st.session_state["data"] = (
+        pd.DataFrame([res]).astype("float64").set_index("t", drop=False)
+    )
 
 # Some initial values
 Glc_F = 2500  # mM
@@ -110,34 +112,49 @@ if st.session_state.auto_refresh:
 
     try:
         res_n = next(gen(data.iloc[-1], Glc_F, Gln_F, F_Glc, F_Gln, F_B))
-        df_n = pd.DataFrame().from_dict([res_n]).set_index("t", drop=False)
+        df_n = (
+            pd.DataFrame()
+            .from_dict([res_n])
+            .astype("float64")
+            .set_index("t", drop=False)
+        )
 
-        df_XP = pd.DataFrame(
-            [{"t": res_n["t"], "X": res_n["X"], "P": res_n["P"]}]
-        ).set_index("t", drop=False)
+        df_XP = (
+            pd.DataFrame([{"t": res_n["t"], "X": res_n["X"], "P": res_n["P"]}])
+            .astype("float64")
+            .set_index("t", drop=False)
+        )
 
-        df_nutrients = pd.DataFrame(
-            [
-                {
-                    "t": res_n["t"],
-                    "Lac": res_n["Lac"],
-                    "Glc": res_n["Glc"],
-                    "Gln": res_n["Gln"],
-                    "Amm": res_n["Amm"],
-                }
-            ]
-        ).set_index("t", drop=False)
+        df_nutrients = (
+            pd.DataFrame(
+                [
+                    {
+                        "t": res_n["t"],
+                        "Lac": res_n["Lac"],
+                        "Glc": res_n["Glc"],
+                        "Gln": res_n["Gln"],
+                        "Amm": res_n["Amm"],
+                    }
+                ]
+            )
+            .astype("float64")
+            .set_index("t", drop=False)
+        )
 
-        df_feed_volume = pd.DataFrame(
-            [
-                {
-                    "t": res_n["t"],
-                    "V": res_n["V"],
-                    "F_Gln": res_n["F_Gln"],
-                    "F_Glc": res_n["F_Glc"],
-                }
-            ]
-        ).set_index("t", drop=False)
+        df_feed_volume = (
+            pd.DataFrame(
+                [
+                    {
+                        "t": res_n["t"],
+                        "V": res_n["V"],
+                        "F_Gln": res_n["F_Gln"],
+                        "F_Glc": res_n["F_Glc"],
+                    }
+                ]
+            )
+            .astype("float64")
+            .set_index("t", drop=False)
+        )
 
         Xchart.add_rows(df_XP)
         Pchart.add_rows(df_XP)
@@ -149,7 +166,7 @@ if st.session_state.auto_refresh:
         feed_chart.add_rows(df_feed_volume)
 
         st.session_state["data"] = pd.concat(
-            [data, pd.DataFrame([res_n]).set_index("t", drop=False)],
+            [data, df_n],
         )
     except StopIteration:
         st.toast("Simulation Complete! :partying_face:")
