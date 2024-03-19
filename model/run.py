@@ -132,7 +132,7 @@ def init_sim(
     return res
 
 
-def gen(data, Glc_F, Gln_F, F_Glc, F_Gln, F_B, t_max=250, dt=0.5):
+def gen(data, Glc_F, Gln_F, F_Glc, F_Gln, F_B, t_max=250, dt=1):
     res = data.to_dict()
     n_points = int(t_max / dt) + 1
 

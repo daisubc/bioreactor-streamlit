@@ -10,6 +10,13 @@ def download_data():
         return DataFrame().to_csv().encode("utf-8")
 
 
+def toggle_simulation():
+    if st.session_state.running_toggle:
+        st.session_state.auto_refresh = True
+    else:
+        st.session_state.auto_refresh = False
+
+
 def reset_sim():
     st.toast("Simulation Reset!")
     del st.session_state["data"]
@@ -29,12 +36,17 @@ def mk_sidebar(title="Default Title", caption="Default Caption"):
         """
         Speed Control
         """
-        st.session_state.auto_refresh = st.toggle(
-            "Run Simulation", key="running_toggle"
+        st.toggle(
+            "Run Simulation",
+            value=st.session_state.auto_refresh,
+            key="running_toggle",
+            on_change=toggle_simulation,
         )
 
         if "data" in st.session_state:
-            st.markdown(f"Simulation Time: *{st.session_state['data']['t'].iloc[-1]}* h")
+            st.markdown(
+                f"Simulation Time: *{st.session_state['data']['t'].iloc[-1]}* h"
+            )
 
         speed = st.select_slider("Speed Equals:", options=["1x", "2x", "3x"])
         st.session_state.sleep_time = 0.1 / int(speed[0])

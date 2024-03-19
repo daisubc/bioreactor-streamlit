@@ -171,7 +171,7 @@ if st.session_state.auto_refresh:
     except StopIteration:
         st.toast("Simulation Complete! :partying_face:")
         st.session_state.auto_refresh = False
-
-    sleep(st.session_state.sleep_time)
-    # st.session_state['data']['i'] += 1
-    st.experimental_rerun()
+    else:
+        sleep(st.session_state.sleep_time)
+        # st.session_state['data']['i'] += 1
+        st.experimental_rerun()
