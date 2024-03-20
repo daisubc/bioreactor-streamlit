@@ -1,8 +1,8 @@
-import streamlit as st
 import altair as alt
 
+## DO NOT CACHE THE CHARTS
 
-@st.cache_data(ttl=5)
+
 def write_XP_graph(data):
     data = data[["t", "X", "P"]]
 
@@ -28,7 +28,6 @@ def write_XP_graph(data):
     return chart1, chart2
 
 
-@st.cache_data(ttl=5)
 def write_nutrients_graph(data):
     data = data[["t", "Lac", "Glc", "Gln", "Amm"]]
 
@@ -54,7 +53,6 @@ def write_nutrients_graph(data):
     return chart1, chart2
 
 
-@st.cache_data(ttl=5)
 def write_volume_graph(data):
     data = data[["t", "V", "F_Gln", "F_Glc"]]
 

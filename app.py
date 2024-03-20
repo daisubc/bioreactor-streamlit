@@ -9,6 +9,12 @@ from gui.graph import write_XP_graph, write_nutrients_graph, write_volume_graph
 
 from model.run import init_sim, gen, param
 
+# Un-comment for Profiling
+# from pathlib import Path
+# from pyinstrument import Profiler
+
+# profiler = Profiler()
+# profiler.start()
 
 st.set_page_config(page_title="BioReactorSim", page_icon=":joystick:", layout="wide")
 
@@ -168,10 +174,16 @@ if st.session_state.auto_refresh:
         st.session_state["data"] = pd.concat(
             [data, df_n],
         )
+
+        # profiler.stop()
+        # html_file = profiler.output_html()
+        # file = Path("profile.html")
+        # file.write_text(html_file, encoding="utf-8")
+
     except StopIteration:
         st.toast("Simulation Complete! :partying_face:")
         st.session_state.auto_refresh = False
     else:
         sleep(st.session_state.sleep_time)
         # st.session_state['data']['i'] += 1
-        st.experimental_rerun()
+        st.rerun()
