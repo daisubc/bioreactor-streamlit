@@ -10,6 +10,21 @@ def download_data():
         return DataFrame().to_csv().encode("utf-8")
 
 
+def alert_user(Glc, Gln):
+
+    if Glc > st.session_state.alarms[0]:
+        st.toast(
+            "Glucose concentration exceeds {}".format(st.session_state.alarms[0]),
+            icon="🚨",
+        )
+
+    if Gln > st.session_state.alarms[1]:
+        st.toast(
+            "Glutamine concentration exceeds {}".format(st.session_state.alarms[1]),
+            icon="🚨",
+        )
+
+
 def toggle_simulation():
     if st.session_state.running_toggle:
         st.session_state.auto_refresh = True
@@ -48,7 +63,20 @@ def mk_sidebar(title="Default Title", caption="Default Caption"):
                 f"Simulation Time: *{st.session_state['data']['t'].iloc[-1]}* h"
             )
 
-        speed = st.select_slider("Speed Equals:", options=["1x", "2x", "3x"])
+        app_dt = st.select_slider(
+            "Select Simulation Step Time",
+            options=[
+                "1 hour",
+                "2 hours",
+                "3 hours",
+                "4 hours",
+                "5 hours",
+            ],
+        )
+
+        st.session_state.app_dt = int(app_dt[0])
+
+        speed = st.select_slider("Simulation Speed:", options=["1x", "2x", "3x"])
         st.session_state.sleep_time = 0.1 / int(speed[0])
 
         col1, col2 = st.columns(2)
@@ -94,6 +122,15 @@ def mk_sidebar(title="Default Title", caption="Default Caption"):
                 "$F_{Gln}$ (L/h)", value=0.0, min_value=0.0, max_value=5.0
             )
 
+        st.subheader("**Alarms**")
+        max_Glc = st.number_input(
+            "Max Glc (mM)", value=60.0, min_value=0.0, max_value=100.0
+        )
+
+        max_Gln = st.number_input(
+            "Max Gln (mM)", value=10.0, min_value=0.0, max_value=100.0
+        )
+
         st.subheader("**Dosing Times**")
         t0_glc, tn_glc = st.select_slider(
             "Glucose Dosing Time (h)", options=np.arange(0, 251, 25), value=(175, 225)
@@ -107,3 +144,4 @@ def mk_sidebar(title="Default Title", caption="Default Caption"):
         st.session_state.flows = [F_Glc, F_Gln]
         st.session_state.t_glc = (t0_glc, tn_glc)
         st.session_state.t_gln = (t0_gln, tn_gln)
+        st.session_state.alarms = [max_Glc, max_Gln]

@@ -2,12 +2,13 @@ import streamlit as st
 from time import sleep
 import pandas as pd
 
-from gui.sidebar import mk_sidebar
+from gui.sidebar import mk_sidebar, alert_user
 from gui.instructions import render_instructions
 from gui.metrics import mk_metrics
 from gui.graph import write_XP_graph, write_nutrients_graph, write_volume_graph
 
 from model.run import init_sim, gen, param
+from millify import millify
 
 # Un-comment for Profiling
 # from pathlib import Path
@@ -117,7 +118,17 @@ if st.session_state.auto_refresh:
         F_Gln = 0
 
     try:
-        res_n = next(gen(data.iloc[-1], Glc_F, Gln_F, F_Glc, F_Gln, F_B))
+        res_n = next(
+            gen(
+                data.iloc[-1],
+                Glc_F,
+                Gln_F,
+                F_Glc,
+                F_Gln,
+                F_B,
+                dt=st.session_state.app_dt,
+            )
+        )
         df_n = (
             pd.DataFrame()
             .from_dict([res_n])
@@ -175,6 +186,8 @@ if st.session_state.auto_refresh:
             [data, df_n],
         )
 
+        alert_user(data["Glc"].iloc[-1], data["Gln"].iloc[-1])
+
         # profiler.stop()
         # html_file = profiler.output_html()
         # file = Path("profile.html")
@@ -182,6 +195,11 @@ if st.session_state.auto_refresh:
 
     except StopIteration:
         st.toast("Simulation Complete! :partying_face:")
+        st.toast(
+            "Maximum cell concentration of {} achieved at {} hours".format(
+                millify(max(data["X"]), precision=2), data["X"].idxmax()
+            )
+        )
         st.session_state.auto_refresh = False
     else:
         sleep(st.session_state.sleep_time)
