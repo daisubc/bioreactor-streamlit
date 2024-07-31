@@ -2,7 +2,7 @@ import streamlit as st
 from pandas import DataFrame
 
 
-@st.cache_resource
+# @st.cache_resource
 def render_instructions(params):
     col1, col2 = st.columns(2)
     col1.markdown(
@@ -47,8 +47,13 @@ def render_instructions(params):
 
     # Equation & Constants Section
     st.markdown("#### Equations & Kinetic Constants")
-    st.markdown("The following table shows the kinetic constants for the simulation.")
+    st.markdown(
+        "The following table shows the kinetic constants for the simulation. Try editing the value column to see the effect that has on the simulation. You will not be able to edit the parameters after the simulation starts!"
+    )
     df = DataFrame.from_dict(params, orient="index")
+
+    st.session_state.param_df = df
+
     df = df.rename(columns={0: "Values"})
     df["Units"] = [
         "1/h",
@@ -68,15 +73,20 @@ def render_instructions(params):
         "mM",
         "mM",
     ]
-    st.dataframe(
+
+    param_df = st.data_editor(
         df,
         use_container_width=True,
         column_config={
+            "": st.column_config.Column(disabled=True),
             "Values": st.column_config.NumberColumn(
                 help="The value of the given parameter", format="%.2e"
-            )
+            ),
+            "Units": st.column_config.TextColumn(disabled=True),
         },
     )
+
+    st.session_state.param_df = param_df["Values"]
 
     st.markdown(
         """

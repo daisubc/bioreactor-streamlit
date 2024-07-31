@@ -31,22 +31,41 @@ def write_XP_graph(data):
 def write_nutrients_graph(data):
     data = data[["t", "Lac", "Glc", "Gln", "Amm"]]
 
+    data_long = data[["t", "Glc", "Lac"]].melt(
+        id_vars="t", value_vars=["Glc", "Lac"], var_name="Nutrient", value_name="Value"
+    )
+
     # First chart for Glc and Lac
-    chart1 = alt.Chart(data).mark_line().encode(
-        x=alt.X("t:Q", title="Time (h)"),
-        y=alt.Y("Glc:Q", title="Glc (mM)"),
-        color=alt.datum("Glc"),
-    ) + alt.Chart(data).mark_line().encode(
-        x=alt.X("t:Q", title="Time (h)"),
-        y=alt.Y("Lac:Q", title="Lac (mM)"),
-        color=alt.datum("Lac"),
+    chart1 = (
+        alt.Chart(data_long)
+        .mark_line()
+        .encode(
+            x=alt.X("t:Q", title="Time (h)"),
+            y=alt.Y("Value:Q", title="Concentration (mM)"),
+            color=alt.Color(
+                "Nutrient:N",
+                scale=alt.Scale(range=["blue", "grey"], domain=["Glc", "Lac"]),
+            ),
+        )
     )
 
     # Second chart for Gln and Amm
-    chart2 = alt.Chart(data).mark_line(color="red").encode(
-        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("Gln:Q", title="Gln (mM)")
-    ) + alt.Chart(data).mark_line(color="orange").encode(
-        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("Amm:Q", title="Amm (mM)")
+
+    data_long = data[["t", "Gln", "Amm"]].melt(
+        id_vars="t", value_vars=["Gln", "Amm"], var_name="Nutrient", value_name="Value"
+    )
+
+    chart2 = (
+        alt.Chart(data_long)
+        .mark_line()
+        .encode(
+            x=alt.X("t:Q", title="Time (h)"),
+            y=alt.Y("Value:Q", title="Concentration (mM)"),
+            color=alt.Color(
+                "Nutrient:N",
+                scale=alt.Scale(range=["orange", "red"], domain=["Gln", "Amm"]),
+            ),
+        )
     )
 
     # Display the charts in Streamlit
@@ -56,11 +75,25 @@ def write_nutrients_graph(data):
 def write_volume_graph(data):
     data = data[["t", "V", "F_Gln", "F_Glc"]]
 
+    data_long = data[["t", "F_Gln", "F_Glc"]].melt(
+        id_vars="t",
+        value_vars=["F_Glc", "F_Gln"],
+        var_name="Nutrient",
+        value_name="Value",
+    )
+
     # First chart for Glc and Lac
-    chart2 = alt.Chart(data).mark_line(color="blue").encode(
-        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("F_Gln:Q", title="F_Gln (L/h)")
-    ) + alt.Chart(data).mark_line(color="red").encode(
-        x=alt.X("t:Q", title="Time (h)"), y=alt.Y("F_Glc:Q", title="F_Glc (L/h)")
+    chart2 = (
+        alt.Chart(data_long)
+        .mark_line()
+        .encode(
+            x=alt.X("t:Q", title="Time (h)"),
+            y=alt.Y("Value:Q", title="Flow (L/h)"),
+            color=alt.Color(
+                "Nutrient:N",
+                scale=alt.Scale(range=["orange", "blue"], domain=["F_Gln", "F_Glc"]),
+            ),
+        )
     )
 
     # Second chart for Gln and Amm
@@ -69,7 +102,7 @@ def write_volume_graph(data):
         .mark_line(color="purple")
         .encode(
             x=alt.X("t:Q", title="Time (h)"),
-            y=alt.Y("V:Q", title="Volume (L)"),
+            y=alt.Y("V:Q", title="Volume (mL)"),
         )
     )
 

@@ -105,6 +105,7 @@ def init_sim(
     Amm_0=0.0,
     P_0=0.0,  # mg/mL
     V_0=1000.0,  # L
+    params=param,
 ):
     # initialization
     res = {}

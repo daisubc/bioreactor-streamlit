@@ -39,7 +39,11 @@ if "data" not in st.session_state and st.session_state.auto_refresh:
 
     [Glc_0, Gln_0] = st.session_state.initial_vals
 
-    res = init_sim(Glc_0=Glc_0, Gln_0=Gln_0)
+    res = init_sim(
+        Glc_0=Glc_0,
+        Gln_0=Gln_0,
+        params=st.session_state.param_df.to_dict(),
+    )
     st.session_state["data"] = (
         pd.DataFrame([res]).astype("float64").set_index("t", drop=False)
     )
@@ -176,11 +180,33 @@ if st.session_state.auto_refresh:
         Xchart.add_rows(df_XP)
         Pchart.add_rows(df_XP)
 
-        glc_lac_chart.add_rows(df_nutrients)
-        gln_amm_chart.add_rows(df_nutrients)
+        glc_lac_chart.add_rows(
+            df_nutrients[["t", "Glc", "Lac"]].melt(
+                id_vars="t",
+                value_vars=["Glc", "Lac"],
+                var_name="Nutrient",
+                value_name="Value",
+            )
+        )
+
+        gln_amm_chart.add_rows(
+            df_nutrients[["t", "Gln", "Amm"]].melt(
+                id_vars="t",
+                value_vars=["Gln", "Amm"],
+                var_name="Nutrient",
+                value_name="Value",
+            )
+        )
 
         volume_chart.add_rows(df_feed_volume)
-        feed_chart.add_rows(df_feed_volume)
+        feed_chart.add_rows(
+            df_feed_volume[["t", "F_Gln", "F_Glc"]].melt(
+                id_vars="t",
+                value_vars=["F_Gln", "F_Glc"],
+                var_name="Nutrient",
+                value_name="Value",
+            )
+        )
 
         st.session_state["data"] = pd.concat(
             [data, df_n],
