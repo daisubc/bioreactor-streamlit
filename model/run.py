@@ -135,67 +135,63 @@ def init_sim(
 
 def gen(data, Glc_F, Gln_F, F_Glc, F_Gln, F_B, t_max=250, dt=1):
     res = data.to_dict()
-    n_points = int(t_max / dt) + 1
 
-    for _ in range(n_points):
-        if res["t"] >= t_max:
-            break
+    if res["t"] >= t_max:
+        return
 
-        t = res["t"] + dt
+    t = res["t"] + dt
 
-        # Mass Balance equations
-        X = res["X"] * (
-            1 + dt * (res["mu"] - res["kD"] - (F_Glc + F_Gln + F_B) / res["V"])
-        )
+    # Mass Balance equations
+    X = res["X"] * (1 + dt * (res["mu"] - res["kD"] - (F_Glc + F_Gln + F_B) / res["V"]))
 
-        Glc = res["Glc"] + dt * (
-            F_Glc * (Glc_F - res["Glc"]) / res["V"]
-            - (F_Gln + F_B) * res["Glc"] / res["V"]
-            - res["X"] * res["q_Glc"]
-        )
-        if Glc < 0:
-            Glc = 0
+    Glc = res["Glc"] + dt * (
+        F_Glc * (Glc_F - res["Glc"]) / res["V"]
+        - (F_Gln + F_B) * res["Glc"] / res["V"]
+        - res["X"] * res["q_Glc"]
+    )
+    if Glc < 0:
+        Glc = 0
 
-        Gln = res["Gln"] + dt * (
-            F_Gln * (Gln_F - res["Gln"]) / res["V"]
-            - (F_Glc + F_B) * res["Gln"] / res["V"]
-            - res["X"] * res["q_Gln"]
-        )
-        if Gln < 0:
-            Gln = 0
+    Gln = res["Gln"] + dt * (
+        F_Gln * (Gln_F - res["Gln"]) / res["V"]
+        - (F_Glc + F_B) * res["Gln"] / res["V"]
+        - res["X"] * res["q_Gln"]
+    )
+    if Gln < 0:
+        Gln = 0
 
-        Lac = res["Lac"] + dt * (
-            res["q_Lac"] * res["X"] - (F_Glc + F_Gln + F_B) * res["Lac"] / res["V"]
-        )
-        Amm = res["Amm"] + dt * (
-            res["q_Amm"] * res["X"] - (F_Glc + F_Gln + F_B) * res["Amm"] / res["V"]
-        )
-        P = res["P"] + dt * (
-            res["q_P"] * res["X"] - (F_Glc + F_Gln + F_B) * res["P"] / res["V"]
-        )
-        V = res["V"] + dt * (F_Glc + F_Gln + F_B)
+    Lac = res["Lac"] + dt * (
+        res["q_Lac"] * res["X"] - (F_Glc + F_Gln + F_B) * res["Lac"] / res["V"]
+    )
+    Amm = res["Amm"] + dt * (
+        res["q_Amm"] * res["X"] - (F_Glc + F_Gln + F_B) * res["Amm"] / res["V"]
+    )
+    P = res["P"] + dt * (
+        res["q_P"] * res["X"] - (F_Glc + F_Gln + F_B) * res["P"] / res["V"]
+    )
+    V = res["V"] + dt * (F_Glc + F_Gln + F_B)
 
-        # store results for next calc
-        res["t"] = t
-        res["X"] = X
-        res["Glc"] = Glc
-        res["Gln"] = Gln
-        res["Lac"] = Lac
-        res["Amm"] = Amm
-        res["P"] = P
-        res["V"] = V
+    # store results for next calc
+    res["t"] = t
+    res["X"] = X
+    res["Glc"] = Glc
+    res["Gln"] = Gln
+    res["Lac"] = Lac
+    res["Amm"] = Amm
+    res["P"] = P
+    res["V"] = V
 
-        res["F_Glc"] = F_Glc
-        res["F_Gln"] = F_Gln
-        res["F_B"] = F_B
+    res["F_Glc"] = F_Glc
+    res["F_Gln"] = F_Gln
+    res["F_B"] = F_B
 
-        # kinetics
-        res["mu"] = mu_func(res, param)
-        res["kD"] = k_D(res, param)
-        res["q_Glc"] = GUR(res, param)
-        res["q_Gln"] = GlnUR(res, param)
-        res["q_Lac"] = LPR(res, param)
-        res["q_Amm"] = APR(res, param)
-        res["q_P"] = PPR(res, param)
+    # kinetics
+    res["mu"] = mu_func(res, param)
+    res["kD"] = k_D(res, param)
+    res["q_Glc"] = GUR(res, param)
+    res["q_Gln"] = GlnUR(res, param)
+    res["q_Lac"] = LPR(res, param)
+    res["q_Amm"] = APR(res, param)
+    res["q_P"] = PPR(res, param)
 
-        yield res
+    yield res
