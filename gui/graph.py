@@ -66,6 +66,7 @@ def write_nutrients_graph(data):
                 scale=alt.Scale(range=["orange", "red"], domain=["Gln", "Amm"]),
             ),
         )
+        .interactive()
     )
 
     # Display the charts in Streamlit

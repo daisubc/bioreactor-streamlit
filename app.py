@@ -37,11 +37,16 @@ if "data" not in st.session_state and st.session_state.auto_refresh:
     t_max = 250  # h
     N = 25  # points
 
-    [Glc_0, Gln_0] = st.session_state.initial_vals
+    [Glc_0, Gln_0, X_0, P_0, Amm, Lac, V_0] = st.session_state.initial_vals
 
     res = init_sim(
         Glc_0=Glc_0,
         Gln_0=Gln_0,
+        X_0=X_0,
+        P_0=P_0,
+        V_0=V_0,
+        Lac_0=Lac,
+        Amm_0=Amm,
         params=st.session_state.param_df.to_dict(),
     )
     st.session_state["data"] = (
