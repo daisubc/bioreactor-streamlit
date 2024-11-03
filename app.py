@@ -103,6 +103,11 @@ with tab2:
     Pchart = middle.altair_chart(products, use_container_width=True)
     volume_chart = right.altair_chart(volume, use_container_width=True)
 
+    # FIXME: Hacky fix to resolve https://discuss.streamlit.io/t/tool-tips-in-fullscreen-mode-for-charts/6800/8
+    st.markdown(
+        "<style>#vg-tooltip-element{z-index: 1000051}</style>", unsafe_allow_html=True
+    )
+
     st.subheader("Nutrients, Metabolites & Feed Volumes")
 
     chart1, chart2 = write_nutrients_graph(data)
