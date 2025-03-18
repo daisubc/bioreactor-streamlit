@@ -12,7 +12,7 @@ else:
 
 
 def download_data():
-    if "data" in st.session_state and st.session_state.auto_refresh:
+    if "data" in st.session_state:
         return st.session_state["data"].to_csv().encode("utf-8")
     else:
         return DataFrame().to_csv().encode("utf-8")
