@@ -42,7 +42,10 @@ def toggle_simulation():
 
 def reset_sim():
     st.toast("Simulation Reset!")
-    del st.session_state["data"]
+    try:
+        del st.session_state["data"]
+    except KeyError:
+        return
 
 
 def mk_sidebar(title="Default Title", caption="Default Caption"):
